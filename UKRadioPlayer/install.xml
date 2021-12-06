@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<extension>
+	<name>PLUGIN_UKRADIOPLAYER</name>
+	<module>Plugins::UKRadioPlayer::Plugin</module>
+	<version>1.0.0</version>
+	<description>PLUGIN_UKRADIOPLAYER_DESC</description>
+	<creator>ExpectingToFly</creator>	
+	<homepageURL>https://github.com/expectingtofly/LMS_UKRadioPlayer_Plugin</homepageURL>
+	<icon>plugins/UKRadioPlayer/html/images/RadioPlayerUK_svg.png</icon>
+	<defaultState>enabled</defaultState>
+	<targetApplication>
+		<id>SlimServer</id>
+		<minVersion>7.9</minVersion>
+        <maxVersion>*</maxVersion>
+	</targetApplication>
+	<optionsURL>plugins/UKRadioPlayer/settings/basic.html</optionsURL>	
+</extension>
