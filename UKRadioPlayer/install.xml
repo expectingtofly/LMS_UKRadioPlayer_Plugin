@@ -3,7 +3,7 @@
 <extension>
 	<name>PLUGIN_UKRADIOPLAYER</name>
 	<module>Plugins::UKRadioPlayer::Plugin</module>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<description>PLUGIN_UKRADIOPLAYER_DESC</description>
 	<creator>ExpectingToFly</creator>	
 	<homepageURL>https://github.com/expectingtofly/LMS_UKRadioPlayer_Plugin</homepageURL>

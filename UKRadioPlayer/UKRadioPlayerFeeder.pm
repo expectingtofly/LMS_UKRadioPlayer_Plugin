@@ -229,7 +229,7 @@ sub _createServiceMenuItem {
 
 	main::DEBUGLOG && $log->is_debug && $log->debug('Service Item Dump : ' . Dumper($serviceJSON));	
 
-	if ( my $plyr = $serviceJSON->{player} ) {
+	if ( my $plyr = $serviceJSON->{liveStreams}[0]->{player} ) {
 		if ($plyr =~ /^https:\/\/www.bbc.co.uk\/sounds\/player\//) {
 			my ($id) = $plyr =~ /^https:\/\/www.bbc.co.uk\/sounds\/player\/(.*)/;
 		
