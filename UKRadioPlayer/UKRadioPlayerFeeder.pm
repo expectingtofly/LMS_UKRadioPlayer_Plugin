@@ -41,9 +41,14 @@ use Plugins::UKRadioPlayer::Utilities;
 my $log = logger('plugin.ukradioplayer');
 my $prefs = preferences('plugin.ukradioplayer');
 
+my $isRadioFavourites;
+
 my $cache = Slim::Utils::Cache->new();
 sub flushCache { $cache->cleanup(); }
 
+sub init {
+	$isRadioFavourites = Slim::Utils::PluginManager->isEnabled('Plugins::RadioFavourites::Plugin');
+}
 
 sub toplevel {
 	my ( $client, $callback, $args ) = @_;
@@ -227,29 +232,53 @@ sub _createServiceMenuItem {
 
 	my $url = 'radioplayeruk://_LIVE_' . $id;
 
-	main::DEBUGLOG && $log->is_debug && $log->debug('Service Item Dump : ' . Dumper($serviceJSON));	
+	main::DEBUGLOG && $log->is_debug && $log->debug('Service Item Dump : ' . Dumper($serviceJSON));
 
 	if ( my $plyr = $serviceJSON->{liveStreams}[0]->{player} ) {
 		if ($plyr =~ /^https:\/\/www.bbc.co.uk\/sounds\/player\//) {
-			my ($id) = $plyr =~ /^https:\/\/www.bbc.co.uk\/sounds\/player\/(.*)/;
-		
-			$url = 'sounds://_LIVE_' . $id;
-		}
+			my ($bbcId) = $plyr =~ /^https:\/\/www.bbc.co.uk\/sounds\/player\/(.*)/;
+
+			$url = 'sounds://_LIVE_' . $bbcId;
+		}	
 	}
 
-	main::DEBUGLOG && $log->is_debug && $log->debug('Url  : ' . $url);	
+	main::DEBUGLOG && $log->is_debug && $log->debug('Url  : ' . $url);
 
-	push @$menu,
-	  {
+
+	my $service = {
 		name => $serviceJSON->{name},
 		type => 'audio',
 		url => $url,
 		image => $serviceJSON->{multimedia}[0]->{url},
 		on_select   => 'play'
-	  };
+	};
+
+	if ($isRadioFavourites) {
+		$service->{itemActions} = getItemActions($serviceJSON->{name}, $url, $id);
+	}
+
+	push @$menu, $service;
 
 	return;
 
+}
+
+
+sub getItemActions {
+	my $name = shift;
+	my $url = shift;
+	my $key = shift;
+	return  {
+		info => {
+			command     => ['radiofavourites', 'addStation'],
+			fixedParams => {
+				name => $name,
+				stationKey => $key,
+				url => $url,
+				handlerFunctionKey => 'ukradioplayer'
+			}
+		},
+	};
 }
 
 
@@ -258,7 +287,7 @@ sub _createOnDemandMenuItem {
 
 	my $liveStreams = $serviceJSON->{liveStreams};
 
-	main::DEBUGLOG && $log->is_debug && $log->debug('On Demand Item Dump : ' . Dumper($serviceJSON));	
+	main::DEBUGLOG && $log->is_debug && $log->debug('On Demand Item Dump : ' . Dumper($serviceJSON));
 
 	my $streamSource = _livestreamSelector($serviceJSON->{onDemandStreams}[0]->{audioStreams});
 	my $url = $streamSource->{'url'};
@@ -267,12 +296,12 @@ sub _createOnDemandMenuItem {
 		if ($plyr =~ /\/www.bbc.co.uk\//) {
 			my ($id) = $plyr =~ /\/player\/(.*)/;
 			my ($pid) = $url =~/json\/vpid\/(.*)\/mediaset\//;
-		
+
 			$url = 'sounds://_' . $pid . '_' . $id . '_0';
 		}
 	}
 
-	main::DEBUGLOG && $log->is_debug && $log->debug("On Demand Url : $url");	
+	main::DEBUGLOG && $log->is_debug && $log->debug("On Demand Url : $url");
 
 	push @$menu,
 	  {
@@ -346,7 +375,7 @@ sub _callAPI {
 		$callUrl,
 		'User-Agent' => 'Dalvik/2.1.0 (Linux; U; Android 6.0.1; Nexus 5 Build/M4B30Z',
 		'Accept' => 'application/json',
-		'Authorization' => 'Basic [Redacted]'
+		'Authorization' => 'Basic dWtycG1vYmlsZTo0dVN3ZWJldDNrYWN1cUVk'
 	);
 }
 
