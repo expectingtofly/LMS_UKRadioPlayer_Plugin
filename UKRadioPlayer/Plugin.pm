@@ -28,6 +28,7 @@ use Slim::Utils::Log;
 use Slim::Utils::Prefs;
 
 use Plugins::UKRadioPlayer::UKRadioPlayerFeeder;
+use Plugins::UKRadioPlayer::RadioFavourites;
 
 my $log = Slim::Utils::Log->addLogCategory(
 	{
@@ -61,6 +62,21 @@ sub initPlugin {
 
 
 
+	return;
+}
+
+sub postinitPlugin {
+	my $class = shift;
+
+	if (Slim::Utils::PluginManager->isEnabled('Plugins::RadioFavourites::Plugin')) {
+		Plugins::RadioFavourites::Plugin::addHandler(
+			{
+				handlerFunctionKey => 'ukradioplayer',      #The key to the handler				
+				handlerSub =>  \&Plugins::UKRadioPlayer::RadioFavourites::getStationData          #The operation to handle getting the
+			}
+		);
+	}
+	Plugins::UKRadioPlayer::UKRadioPlayerFeeder::init();
 	return;
 }
 
