@@ -130,7 +130,7 @@ sub readMetaData {
 				sub {
 					my $json = shift;
 					my $meta = {
-						type  => 'UKRadioPlayer',
+						type  => $song->streamformat . ' (UK RadioPlayer)',
 						title =>  '',
 						artist => '',
 						icon  =>  '',
